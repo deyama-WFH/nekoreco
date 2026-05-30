@@ -25,6 +25,8 @@ import {
 
 type AppStoreState = {
   hasCompletedOnboarding: boolean;
+  homeStatus: 'loading' | 'ready' | 'error';
+  homeErrorMessage: string | null;
   cats: Cat[];
   medicalProfiles: CatMedicalProfile[];
   foodProfiles: CatFoodProfile[];
@@ -40,6 +42,8 @@ type Listener = (state: AppStoreState) => void;
 
 let state: AppStoreState = {
   hasCompletedOnboarding: true,
+  homeStatus: 'ready',
+  homeErrorMessage: null,
   cats: mockCats,
   medicalProfiles: mockMedicalProfiles,
   foodProfiles: mockFoodProfiles,
@@ -70,6 +74,20 @@ function setState(partial: Partial<AppStoreState>) {
   listeners.forEach((listener) => listener(state));
 }
 
+export function updateTaskStatus(taskId: string, status: HomeTask['status']) {
+  setState({
+    tasks: state.tasks.map((task) =>
+      task.id === taskId
+        ? {
+            ...task,
+            status,
+            updatedAt: new Date().toISOString(),
+          }
+        : task,
+    ),
+  });
+}
+
 export const useAppStore = Object.assign(
   <T>(selector: (currentState: AppStoreState) => T): T =>
     useSyncExternalStore(
@@ -81,5 +99,6 @@ export const useAppStore = Object.assign(
     getState,
     setState,
     subscribe,
+    updateTaskStatus,
   },
 );
