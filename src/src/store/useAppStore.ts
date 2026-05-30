@@ -1,13 +1,54 @@
 import { useSyncExternalStore } from 'react';
 
+import {
+  mockCareProfiles,
+  mockCats,
+  mockFoodProfiles,
+  mockInsuranceProfiles,
+  mockMedicalProfiles,
+  mockRecords,
+  mockReminderSettings,
+  mockSchedules,
+  mockTasks,
+} from '@/store/mockData';
+import {
+  Cat,
+  CatCareProfile,
+  CatFoodProfile,
+  CatInsuranceProfile,
+  CatMedicalProfile,
+  CatRecord,
+  CatSchedule,
+  HomeTask,
+  ReminderSetting,
+} from '@/types/models';
+
 type AppStoreState = {
   hasCompletedOnboarding: boolean;
+  cats: Cat[];
+  medicalProfiles: CatMedicalProfile[];
+  foodProfiles: CatFoodProfile[];
+  insuranceProfiles: CatInsuranceProfile[];
+  careProfiles: CatCareProfile[];
+  records: CatRecord[];
+  schedules: CatSchedule[];
+  tasks: HomeTask[];
+  reminderSettings: ReminderSetting[];
 };
 
 type Listener = (state: AppStoreState) => void;
 
 let state: AppStoreState = {
-  hasCompletedOnboarding: false,
+  hasCompletedOnboarding: true,
+  cats: mockCats,
+  medicalProfiles: mockMedicalProfiles,
+  foodProfiles: mockFoodProfiles,
+  insuranceProfiles: mockInsuranceProfiles,
+  careProfiles: mockCareProfiles,
+  records: mockRecords,
+  schedules: mockSchedules,
+  tasks: mockTasks,
+  reminderSettings: mockReminderSettings,
 };
 
 const listeners = new Set<Listener>();
