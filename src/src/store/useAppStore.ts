@@ -31,7 +31,11 @@ function setState(partial: Partial<AppStoreState>) {
 
 export const useAppStore = Object.assign(
   <T>(selector: (currentState: AppStoreState) => T): T =>
-    useSyncExternalStore(subscribe, () => selector(state), () => selector(state)),
+    useSyncExternalStore(
+      subscribe,
+      () => selector(state),
+      () => selector(state),
+    ),
   {
     getState,
     setState,

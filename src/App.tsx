@@ -50,7 +50,10 @@ export default function App() {
         ) : null}
 
         <View style={styles.actions}>
-          <AppButton label="オンボーディング完了にする" onPress={() => useAppStore.setState({ hasCompletedOnboarding: true })} />
+          <AppButton
+            label="オンボーディング完了にする"
+            onPress={() => useAppStore.setState({ hasCompletedOnboarding: true })}
+          />
           <AppButton
             label="初回状態に戻す"
             variant="secondary"
