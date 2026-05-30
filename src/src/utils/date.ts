@@ -16,3 +16,22 @@ export function formatJapaneseDate(date: Date): string {
     weekday: 'short',
   }).format(date);
 }
+
+export function addDays(date: Date, days: number): Date {
+  const nextDate = new Date(date);
+  nextDate.setDate(nextDate.getDate() + days);
+
+  return nextDate;
+}
+
+export function isSameDate(left: Date, right: Date): boolean {
+  return toDateString(left) === toDateString(right);
+}
+
+export function daysUntil(targetDate: Date, baseDate = new Date()): number {
+  const start = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate());
+  const end = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate());
+  const millisecondsPerDay = 24 * 60 * 60 * 1000;
+
+  return Math.round((end.getTime() - start.getTime()) / millisecondsPerDay);
+}
