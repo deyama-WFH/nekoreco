@@ -7,6 +7,57 @@
 
 ---
 
+## 開発環境
+
+アプリ本体は `src/` 配下の Expo + React Native + TypeScript プロジェクトです。
+
+### 前提
+
+- Bun
+- iOS: Xcode と iOS Simulator、または Expo Go を入れた実機
+- Android: Android Studio と Android Emulator、または Expo Go を入れた実機
+
+### セットアップ
+
+```bash
+cd src
+bun install
+```
+
+### 起動
+
+```bash
+cd src
+bun run start
+```
+
+iOS で起動:
+
+```bash
+cd src
+bun run ios
+```
+
+Android で起動:
+
+```bash
+cd src
+bun run android
+```
+
+### 検証
+
+```bash
+cd src
+bun run lint
+bun run build
+bun run test
+```
+
+Phase 0 では、MVP 非対象機能を作り込まず、後続のオンボーディング、ホーム、猫一覧、記録、通知を追加できる基盤だけを配置しています。
+
+---
+
 ## コンセプト
 
 **たくさんの“うちの子”を、ひとりずつ大切に記録・管理できるアプリ。**
