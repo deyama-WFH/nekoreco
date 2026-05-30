@@ -42,10 +42,12 @@ export function CatListScreen() {
                   {cat.sex === 'male' ? 'オス' : cat.sex === 'female' ? 'メス' : '不明'} /{' '}
                   {cat.coatColorPattern ?? '毛色未登録'}
                 </Text>
-                <Text style={styles.catMeta}>未完了: {taskCount}件</Text>
+                <Text style={styles.catMeta}>未完了タスク {taskCount}件</Text>
                 <AppButton
                   label="詳細"
-                  onPress={() => navigation.dispatch(CommonActions.navigate(catRoutes.detail))}
+                  onPress={() =>
+                    navigation.dispatch(CommonActions.navigate(catRoutes.detail, { catId: cat.id }))
+                  }
                 />
               </Card>
             );

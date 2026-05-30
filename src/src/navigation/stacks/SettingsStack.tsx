@@ -17,21 +17,32 @@ export function SettingsStack() {
       />
       <Stack.Screen name={settingsRoutes.reminders} options={{ title: '通知設定' }}>
         {() => (
-          <PlaceholderScreen title="通知設定" description="カテゴリ別通知設定の仮画面です。" />
+          <PlaceholderScreen
+            title="通知設定"
+            description="カテゴリ別通知設定の仮画面です。"
+          />
         )}
       </Stack.Screen>
       <Stack.Screen name={settingsRoutes.notificationPermission} options={{ title: '通知許可' }}>
         {() => (
-          <PlaceholderScreen title="通知許可" description="ローカル通知許可導線の仮画面です。" />
+          <PlaceholderScreen
+            title="通知許可"
+            description="ローカル通知許可導線の仮画面です。"
+          />
         )}
       </Stack.Screen>
       <Stack.Screen name={settingsRoutes.familyShareComingSoon} options={{ title: '家族共有' }}>
         {() => (
-          <PlaceholderScreen title="家族共有 近日公開" description="MVP では本実装しません。" />
+          <PlaceholderScreen
+            title="家族共有は近日公開"
+            description="MVP では本実装せず、Coming Soon として扱います。"
+          />
         )}
       </Stack.Screen>
       <Stack.Screen name={settingsRoutes.appInfo} options={{ title: 'アプリ情報' }}>
-        {() => <PlaceholderScreen title="アプリ情報" description="MVP v1 の情報表示です。" />}
+        {() => (
+          <PlaceholderScreen title="アプリ情報" description="MVP v1 の情報表示です。" />
+        )}
       </Stack.Screen>
     </Stack.Navigator>
   );
