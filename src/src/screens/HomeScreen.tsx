@@ -24,11 +24,15 @@ export function HomeScreen() {
 
         <Card>
           <Text style={styles.sectionTitle}>今日やること</Text>
-          {tasks.map((task) => (
-            <Text key={task.id} style={styles.item}>
-              {task.title}
-            </Text>
-          ))}
+          {tasks.length > 0 ? (
+            tasks.map((task) => (
+              <Text key={task.id} style={styles.item}>
+                {task.title}
+              </Text>
+            ))
+          ) : (
+            <Text style={styles.item}>今日のタスクはありません。</Text>
+          )}
           <AppButton
             label="タスク詳細へ"
             onPress={() => navigation.dispatch(CommonActions.navigate(homeRoutes.todayTaskDetail))}
@@ -37,11 +41,15 @@ export function HomeScreen() {
 
         <Card>
           <Text style={styles.sectionTitle}>近日の予定</Text>
-          {schedules.map((schedule) => (
-            <Text key={schedule.id} style={styles.item}>
-              {schedule.title}: {schedule.dueDate}
-            </Text>
-          ))}
+          {schedules.length > 0 ? (
+            schedules.map((schedule) => (
+              <Text key={schedule.id} style={styles.item}>
+                {schedule.title}: {schedule.dueDate}
+              </Text>
+            ))
+          ) : (
+            <Text style={styles.item}>近日の予定はありません。</Text>
+          )}
           <AppButton
             label="予定詳細へ"
             variant="secondary"
@@ -59,9 +67,9 @@ export function HomeScreen() {
             </Text>
           ))}
           <AppButton
-            label="猫詳細へ"
+            label="猫一覧へ"
             variant="secondary"
-            onPress={() => navigation.dispatch(CommonActions.navigate(catRoutes.detail))}
+            onPress={() => navigation.dispatch(CommonActions.navigate(catRoutes.list))}
           />
         </Card>
 

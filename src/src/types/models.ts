@@ -58,33 +58,43 @@ export type CatMedicalProfile = AuditFields & {
   sterilizationStatus: SterilizationStatus;
   primaryHospitalName: Nullable<string>;
   primaryDoctorName: Nullable<string>;
-  medicalNotes: Nullable<string>;
+  hospitalPhoneNumber: Nullable<string>;
+  medicalHistory: Nullable<string>;
+  latestVaccineDate: Nullable<DateString>;
+  nextVaccineDate: Nullable<DateString>;
+  latestDewormingDate: Nullable<DateString>;
+  nextDewormingDate: Nullable<DateString>;
+  medicalNote: Nullable<string>;
 };
 
 export type CatFoodProfile = AuditFields & {
   id: ID;
   catId: ID;
-  stapleFoodName: Nullable<string>;
+  regularFood: Nullable<string>;
   favoriteFood: Nullable<string>;
-  allergyNotes: Nullable<string>;
-  feedingNotes: Nullable<string>;
+  dislikedFood: Nullable<string>;
+  foodAllergies: Nullable<string>;
+  foodNote: Nullable<string>;
 };
 
 export type CatInsuranceProfile = AuditFields & {
   id: ID;
   catId: ID;
-  providerName: Nullable<string>;
-  policyNumber: Nullable<string>;
-  coverageNotes: Nullable<string>;
+  insuranceName: Nullable<string>;
+  insurancePlan: Nullable<string>;
+  insurancePolicyNumber: Nullable<string>;
+  insuranceNote: Nullable<string>;
 };
 
 export type CatCareProfile = AuditFields & {
   id: ID;
   catId: ID;
-  personalityNotes: Nullable<string>;
-  careNotes: Nullable<string>;
-  awayNotes: Nullable<string>;
-  familyNotes: Nullable<string>;
+  hasMedication: boolean;
+  medicationNote: Nullable<string>;
+  personality: Nullable<string>;
+  dislikes: Nullable<string>;
+  awayCareNote: Nullable<string>;
+  familyNote: Nullable<string>;
 };
 
 export type RecordType =

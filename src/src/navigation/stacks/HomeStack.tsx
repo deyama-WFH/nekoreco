@@ -28,7 +28,7 @@ export function HomeStack() {
         {() => (
           <PlaceholderScreen
             title="情報追加カテゴリ"
-            description="不足情報の案内カードから遷移します。"
+            description="不足情報の案内カードから遷移する仮画面です。"
           />
         )}
       </Stack.Screen>
@@ -36,7 +36,7 @@ export function HomeStack() {
         {() => (
           <PlaceholderScreen
             title="記録入力"
-            description="ホームからのクイック記録入力仮画面です。"
+            description="ホームからのクイック記録入力用の仮画面です。"
           />
         )}
       </Stack.Screen>

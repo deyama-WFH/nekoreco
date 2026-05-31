@@ -14,9 +14,17 @@ export type OnboardingStackParamList = {
   [onboardingRoutes.splash]: undefined;
   [onboardingRoutes.welcome]: undefined;
   [onboardingRoutes.firstCatRegistration]: undefined;
-  [onboardingRoutes.complete]: undefined;
-  [onboardingRoutes.additionalInfoCategory]: undefined;
-  [onboardingRoutes.additionalInfoInput]: undefined;
+  [onboardingRoutes.complete]: { catId: string };
+  [onboardingRoutes.additionalInfoCategory]: { catId: string; source: 'onboarding' };
+  [onboardingRoutes.additionalInfoInput]: {
+    catId: string;
+    categoryId:
+      | 'medical_prevention'
+      | 'hospital_insurance'
+      | 'food'
+      | 'care_notes'
+      | 'anniversary_notifications';
+  };
 };
 
 export type HomeStackParamList = {
