@@ -12,6 +12,8 @@ import {
   CatSchedule,
   HomeTask,
   ReminderSetting,
+  ReminderTiming,
+  ReminderType,
 } from '@/types/models';
 
 const STORAGE_KEY = 'nekoreco:v1:app-store';
@@ -33,6 +35,13 @@ type AppStoreState = {
 type Listener = (state: AppStoreState) => void;
 type PersistedAppStoreState = Omit<AppStoreState, 'hasHydrated'>;
 type NewCatInput = Omit<Cat, 'id' | 'createdAt' | 'updatedAt'>;
+type AdditionalInfoCategoryId =
+  | 'medical_prevention'
+  | 'hospital_insurance'
+  | 'food'
+  | 'care_notes'
+  | 'anniversary_notifications';
+type AdditionalInfoValue = string | boolean | null;
 
 let state: AppStoreState = {
   hasHydrated: false,
@@ -90,6 +99,83 @@ function createId(prefix: string) {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
+function nullableString(value: AdditionalInfoValue | undefined) {
+  return typeof value === 'string' && value.trim() ? value.trim() : null;
+}
+
+function booleanValue(value: AdditionalInfoValue | undefined, defaultValue = true) {
+  if (typeof value === 'boolean') {
+    return value;
+  }
+
+  if (typeof value !== 'string') {
+    return defaultValue;
+  }
+
+  const normalized = value.trim().toLowerCase();
+
+  if (['false', 'off', '0', 'no'].includes(normalized)) {
+    return false;
+  }
+
+  if (['true', 'on', '1', 'yes'].includes(normalized)) {
+    return true;
+  }
+
+  return defaultValue;
+}
+
+function upsertReminderSetting(
+  settings: ReminderSetting[],
+  type: ReminderType,
+  enabled: boolean,
+  timings: ReminderTiming[],
+  now: string,
+) {
+  const current = settings.find((setting) => setting.type === type);
+  const nextSetting: ReminderSetting = {
+    id: current?.id ?? createId(`reminder-${type}`),
+    type,
+    enabled,
+    timings: current?.timings.length ? current.timings : timings,
+    createdAt: current?.createdAt ?? now,
+    updatedAt: now,
+  };
+
+  return [...settings.filter((setting) => setting.type !== type), nextSetting];
+}
+
+function upsertSchedule(
+  schedules: CatSchedule[],
+  catId: string,
+  type: ReminderType,
+  dueDate: string | null,
+  title: string,
+  now: string,
+) {
+  const remainingSchedules = schedules.filter(
+    (schedule) => !(schedule.catId === catId && schedule.type === type),
+  );
+
+  if (!dueDate) {
+    return remainingSchedules;
+  }
+
+  const current = schedules.find((schedule) => schedule.catId === catId && schedule.type === type);
+  const schedule: CatSchedule = {
+    id: current?.id ?? createId(`schedule-${type}`),
+    catId,
+    type,
+    dueDate,
+    title,
+    status: current?.status ?? 'scheduled',
+    createdAt: current?.createdAt ?? now,
+    updatedAt: now,
+  };
+
+  return [...remainingSchedules, schedule];
+}
+
 export async function hydrateAppStore() {
   const storedValue = await AsyncStorage.getItem(STORAGE_KEY);
 
@@ -136,13 +222,8 @@ export async function completeOnboarding() {
 
 export async function saveAdditionalInfo(
   catId: string,
-  categoryId:
-    | 'medical_prevention'
-    | 'hospital_insurance'
-    | 'food'
-    | 'care_notes'
-    | 'anniversary_notifications',
-  values: Record<string, string | boolean | null>,
+  categoryId: AdditionalInfoCategoryId,
+  values: Record<string, AdditionalInfoValue>,
 ) {
   const now = new Date().toISOString();
 
@@ -159,30 +240,74 @@ export async function saveAdditionalInfo(
           : 'unknown',
       primaryHospitalName: current?.primaryHospitalName ?? null,
       primaryDoctorName: current?.primaryDoctorName ?? null,
-      medicalNotes: String(values.medicalNote ?? values.medicalHistory ?? '') || null,
+      hospitalPhoneNumber: current?.hospitalPhoneNumber ?? null,
+      medicalHistory: nullableString(values.medicalHistory),
+      latestVaccineDate: nullableString(values.vaccineDate),
+      nextVaccineDate: nullableString(values.nextVaccineDate),
+      latestDewormingDate: nullableString(values.dewormingDate),
+      nextDewormingDate: nullableString(values.nextDewormingDate),
+      medicalNote: nullableString(values.medicalNote),
+      createdAt: current?.createdAt ?? now,
+      updatedAt: now,
+    };
+    const nextSchedules = upsertSchedule(
+      upsertSchedule(
+        state.schedules,
+        catId,
+        'vaccine',
+        profile.nextVaccineDate,
+        'ワクチン予定',
+        now,
+      ),
+      catId,
+      'deworming',
+      profile.nextDewormingDate,
+      '駆虫薬予定',
+      now,
+    );
+    setState({
+      medicalProfiles: [
+        ...state.medicalProfiles.filter((profileItem) => profileItem.catId !== catId),
+        profile,
+      ],
+      schedules: nextSchedules,
+    });
+  }
+
+  if (categoryId === 'hospital_insurance') {
+    const currentMedical = state.medicalProfiles.find((profile) => profile.catId === catId);
+    const medicalProfile: CatMedicalProfile = {
+      id: currentMedical?.id ?? createId('medical'),
+      catId,
+      sterilizationStatus: currentMedical?.sterilizationStatus ?? 'unknown',
+      primaryHospitalName: nullableString(values.primaryHospitalName),
+      primaryDoctorName: nullableString(values.primaryDoctorName),
+      hospitalPhoneNumber: nullableString(values.hospitalPhoneNumber),
+      medicalHistory: currentMedical?.medicalHistory ?? null,
+      latestVaccineDate: currentMedical?.latestVaccineDate ?? null,
+      nextVaccineDate: currentMedical?.nextVaccineDate ?? null,
+      latestDewormingDate: currentMedical?.latestDewormingDate ?? null,
+      nextDewormingDate: currentMedical?.nextDewormingDate ?? null,
+      medicalNote: currentMedical?.medicalNote ?? null,
+      createdAt: currentMedical?.createdAt ?? now,
+      updatedAt: now,
+    };
+    const current = state.insuranceProfiles.find((profile) => profile.catId === catId);
+    const profile: CatInsuranceProfile = {
+      id: current?.id ?? createId('insurance'),
+      catId,
+      insuranceName: nullableString(values.insuranceName),
+      insurancePlan: nullableString(values.insurancePlan),
+      insurancePolicyNumber: nullableString(values.insurancePolicyNumber),
+      insuranceNote: nullableString(values.insuranceNote),
       createdAt: current?.createdAt ?? now,
       updatedAt: now,
     };
     setState({
       medicalProfiles: [
         ...state.medicalProfiles.filter((profileItem) => profileItem.catId !== catId),
-        profile,
+        medicalProfile,
       ],
-    });
-  }
-
-  if (categoryId === 'hospital_insurance') {
-    const current = state.insuranceProfiles.find((profile) => profile.catId === catId);
-    const profile: CatInsuranceProfile = {
-      id: current?.id ?? createId('insurance'),
-      catId,
-      providerName: String(values.insuranceName ?? '') || null,
-      policyNumber: String(values.insurancePolicyNumber ?? '') || null,
-      coverageNotes: String(values.insuranceNote ?? values.insurancePlan ?? '') || null,
-      createdAt: current?.createdAt ?? now,
-      updatedAt: now,
-    };
-    setState({
       insuranceProfiles: [
         ...state.insuranceProfiles.filter((profileItem) => profileItem.catId !== catId),
         profile,
@@ -195,10 +320,11 @@ export async function saveAdditionalInfo(
     const profile: CatFoodProfile = {
       id: current?.id ?? createId('food'),
       catId,
-      stapleFoodName: String(values.regularFood ?? '') || null,
-      favoriteFood: String(values.favoriteFood ?? '') || null,
-      allergyNotes: String(values.foodAllergies ?? '') || null,
-      feedingNotes: String(values.foodNote ?? values.dislikedFood ?? '') || null,
+      regularFood: nullableString(values.regularFood),
+      favoriteFood: nullableString(values.favoriteFood),
+      dislikedFood: nullableString(values.dislikedFood),
+      foodAllergies: nullableString(values.foodAllergies),
+      foodNote: nullableString(values.foodNote),
       createdAt: current?.createdAt ?? now,
       updatedAt: now,
     };
@@ -215,10 +341,12 @@ export async function saveAdditionalInfo(
     const profile: CatCareProfile = {
       id: current?.id ?? createId('care'),
       catId,
-      personalityNotes: String(values.personality ?? '') || null,
-      careNotes: String(values.medicationNote ?? '') || null,
-      awayNotes: String(values.awayCareNote ?? '') || null,
-      familyNotes: String(values.familyNote ?? values.dislikes ?? '') || null,
+      hasMedication: booleanValue(values.hasMedication, current?.hasMedication ?? false),
+      medicationNote: nullableString(values.medicationNote),
+      personality: nullableString(values.personality),
+      dislikes: nullableString(values.dislikes),
+      awayCareNote: nullableString(values.awayCareNote),
+      familyNote: nullableString(values.familyNote),
       createdAt: current?.createdAt ?? now,
       updatedAt: now,
     };
@@ -228,6 +356,47 @@ export async function saveAdditionalInfo(
         profile,
       ],
     });
+  }
+
+  if (categoryId === 'anniversary_notifications') {
+    const birthdayEnabled = booleanValue(values.birthdayReminderEnabled);
+    const adoptionEnabled = booleanValue(values.adoptionReminderEnabled);
+    const vaccineEnabled = booleanValue(values.vaccineReminderEnabled);
+    const dewormingEnabled = booleanValue(values.dewormingReminderEnabled);
+    const hospitalVisitEnabled = booleanValue(values.hospitalVisitReminderEnabled);
+    const nextReminderSettings = [
+      {
+        type: 'birthday' as const,
+        enabled: birthdayEnabled,
+        timings: ['seven_days_before', 'on_the_day'] as ReminderTiming[],
+      },
+      {
+        type: 'adoption_anniversary' as const,
+        enabled: adoptionEnabled,
+        timings: ['seven_days_before', 'on_the_day'] as ReminderTiming[],
+      },
+      {
+        type: 'vaccine' as const,
+        enabled: vaccineEnabled,
+        timings: ['seven_days_before', 'one_day_before', 'on_the_day'] as ReminderTiming[],
+      },
+      {
+        type: 'deworming' as const,
+        enabled: dewormingEnabled,
+        timings: ['three_days_before', 'on_the_day'] as ReminderTiming[],
+      },
+      {
+        type: 'hospital_visit' as const,
+        enabled: hospitalVisitEnabled,
+        timings: ['one_day_before', 'on_the_day'] as ReminderTiming[],
+      },
+    ].reduce(
+      (settings, setting) =>
+        upsertReminderSetting(settings, setting.type, setting.enabled, setting.timings, now),
+      state.reminderSettings,
+    );
+
+    setState({ reminderSettings: nextReminderSettings });
   }
 
   await persistState();

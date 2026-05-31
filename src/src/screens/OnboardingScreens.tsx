@@ -232,9 +232,7 @@ export function OnboardingSplashScreen({
       <View style={styles.hero}>
         <Text style={styles.logo}>nekoreco</Text>
         <Text style={styles.heroTitle}>ねこれこ</Text>
-        <Text style={styles.heroText}>
-          たくさんの“うちの子”を、ひとりずつ大切に記録。
-        </Text>
+        <Text style={styles.heroText}>たくさんの“うちの子”を、ひとりずつ大切に記録。</Text>
       </View>
     </ScreenShell>
   );
@@ -253,13 +251,15 @@ export function OnboardingWelcomeScreen({
       </View>
 
       <View style={styles.featureList}>
-        {['猫ごとの情報をまとめて管理', '通院・ワクチン・駆虫を見える化', '家族への申し送りを残せる'].map(
-          (feature) => (
-            <Card key={feature}>
-              <Text style={styles.featureText}>{feature}</Text>
-            </Card>
-          ),
-        )}
+        {[
+          '猫ごとの情報をまとめて管理',
+          '通院・ワクチン・駆虫を見える化',
+          '家族への申し送りを残せる',
+        ].map((feature) => (
+          <Card key={feature}>
+            <Text style={styles.featureText}>{feature}</Text>
+          </Card>
+        ))}
       </View>
 
       <AppButton
@@ -291,6 +291,10 @@ export function FirstCatRegistrationScreen({
   const canShowBreed = breedType === 'purebred';
 
   async function handleSubmit() {
+    if (isSaving) {
+      return;
+    }
+
     const trimmedName = name.trim();
     const today = todayString();
 
@@ -314,22 +318,27 @@ export function FirstCatRegistrationScreen({
       return;
     }
 
-    setIsSaving(true);
-    const cat = await addFirstCat({
-      name: trimmedName,
-      photoUrl: photoUrl.trim() || null,
-      sex,
-      birthDate: canShowBirthDate ? birthDate : null,
-      birthDateType,
-      adoptionDate: canShowAdoptionDate ? adoptionDate : null,
-      adoptionDateType,
-      breed: breedType === 'mixed' ? '雑種' : canShowBreed ? breed.trim() || null : null,
-      breedType,
-      coatColorPattern: coatColorPattern.trim() || null,
-    });
-    setIsSaving(false);
+    try {
+      setIsSaving(true);
+      const cat = await addFirstCat({
+        name: trimmedName,
+        photoUrl: photoUrl.trim() || null,
+        sex,
+        birthDate: canShowBirthDate ? birthDate : null,
+        birthDateType,
+        adoptionDate: canShowAdoptionDate ? adoptionDate : null,
+        adoptionDateType,
+        breed: breedType === 'mixed' ? '雑種' : canShowBreed ? breed.trim() || null : null,
+        breedType,
+        coatColorPattern: coatColorPattern.trim() || null,
+      });
 
-    navigation.replace(onboardingRoutes.complete, { catId: cat.id });
+      navigation.replace(onboardingRoutes.complete, { catId: cat.id });
+    } catch {
+      setError('登録に失敗しました。もう一度お試しください。');
+    } finally {
+      setIsSaving(false);
+    }
   }
 
   return (
@@ -398,7 +407,11 @@ export function FirstCatRegistrationScreen({
         </View>
       </Card>
 
-      <AppButton label={isSaving ? '登録中...' : '登録する'} onPress={handleSubmit} />
+      <AppButton
+        disabled={isSaving}
+        label={isSaving ? '登録中...' : '登録する'}
+        onPress={handleSubmit}
+      />
     </ScreenShell>
   );
 }
@@ -477,11 +490,7 @@ export function AdditionalInfoCategoryScreen({
         ))}
       </View>
 
-      <AppButton
-        label="完了してホームへ"
-        onPress={finishOnboarding}
-        variant="secondary"
-      />
+      <AppButton label="完了してホームへ" onPress={finishOnboarding} variant="secondary" />
     </ScreenShell>
   );
 }
@@ -499,10 +508,17 @@ export function AdditionalInfoInputScreen({
   const [isSaving, setIsSaving] = useState(false);
 
   async function handleSave() {
-    setIsSaving(true);
-    await saveAdditionalInfo(route.params.catId, route.params.categoryId, values);
-    setIsSaving(false);
-    navigation.goBack();
+    if (isSaving) {
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      await saveAdditionalInfo(route.params.catId, route.params.categoryId, values);
+      navigation.goBack();
+    } finally {
+      setIsSaving(false);
+    }
   }
 
   async function finishOnboarding() {
@@ -533,13 +549,13 @@ export function AdditionalInfoInputScreen({
       </Card>
 
       <View style={styles.actions}>
-        <AppButton label={isSaving ? '保存中...' : '保存する'} onPress={handleSave} />
-        <AppButton label="スキップ" onPress={() => navigation.goBack()} variant="secondary" />
         <AppButton
-          label="完了してホームへ"
-          onPress={finishOnboarding}
-          variant="secondary"
+          disabled={isSaving}
+          label={isSaving ? '保存中...' : '保存する'}
+          onPress={handleSave}
         />
+        <AppButton label="スキップ" onPress={() => navigation.goBack()} variant="secondary" />
+        <AppButton label="完了してホームへ" onPress={finishOnboarding} variant="secondary" />
       </View>
     </ScreenShell>
   );

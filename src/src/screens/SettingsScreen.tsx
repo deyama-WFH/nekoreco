@@ -18,9 +18,7 @@ export function SettingsScreen() {
 
         <Card>
           <Text style={styles.sectionTitle}>通知設定</Text>
-          <Text style={styles.description}>
-            設定済みカテゴリ: {reminderSettings.length}件
-          </Text>
+          <Text style={styles.description}>設定済みカテゴリ: {reminderSettings.length}件</Text>
           <AppButton
             label="通知設定へ"
             onPress={() => navigation.dispatch(CommonActions.navigate(settingsRoutes.reminders))}
