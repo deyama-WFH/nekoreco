@@ -32,7 +32,7 @@ export type HomeStackParamList = {
   [homeRoutes.todayTaskDetail]: { taskId?: string } | undefined;
   [homeRoutes.upcomingPlanDetail]: { scheduleId?: string } | undefined;
   [homeRoutes.additionalInfoCategory]: undefined;
-  [homeRoutes.recordInput]: { catId?: string } | undefined;
+  [homeRoutes.recordInput]: { catId?: string; recordType?: string } | undefined;
 };
 
 export type CatStackParamList = {

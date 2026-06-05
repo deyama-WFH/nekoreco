@@ -21,6 +21,8 @@ const STORAGE_KEY = 'nekoreco:v1:app-store';
 type AppStoreState = {
   hasHydrated: boolean;
   hasCompletedOnboarding: boolean;
+  homeStatus: 'loading' | 'ready' | 'error';
+  homeErrorMessage: string | null;
   cats: Cat[];
   medicalProfiles: CatMedicalProfile[];
   foodProfiles: CatFoodProfile[];
@@ -33,7 +35,7 @@ type AppStoreState = {
 };
 
 type Listener = (state: AppStoreState) => void;
-type PersistedAppStoreState = Omit<AppStoreState, 'hasHydrated'>;
+type PersistedAppStoreState = Omit<AppStoreState, 'hasHydrated' | 'homeStatus' | 'homeErrorMessage'>;
 type NewCatInput = Omit<Cat, 'id' | 'createdAt' | 'updatedAt'>;
 type AdditionalInfoCategoryId =
   | 'medical_prevention'
@@ -46,6 +48,8 @@ type AdditionalInfoValue = string | boolean | null;
 let state: AppStoreState = {
   hasHydrated: false,
   hasCompletedOnboarding: false,
+  homeStatus: 'ready',
+  homeErrorMessage: null,
   cats: [],
   medicalProfiles: [],
   foodProfiles: [],
@@ -402,6 +406,21 @@ export async function saveAdditionalInfo(
   await persistState();
 }
 
+export function updateTaskStatus(taskId: string, status: HomeTask['status']) {
+  setState({
+    tasks: state.tasks.map((task) =>
+      task.id === taskId
+        ? {
+            ...task,
+            status,
+            updatedAt: new Date().toISOString(),
+          }
+        : task,
+    ),
+  });
+  void persistState();
+}
+
 export const useAppStore = Object.assign(
   <T>(selector: (currentState: AppStoreState) => T): T =>
     useSyncExternalStore(
@@ -417,5 +436,6 @@ export const useAppStore = Object.assign(
     completeOnboarding,
     hydrateAppStore,
     saveAdditionalInfo,
+    updateTaskStatus,
   },
 );

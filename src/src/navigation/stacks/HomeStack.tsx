@@ -21,14 +21,17 @@ export function HomeStack() {
       </Stack.Screen>
       <Stack.Screen name={homeRoutes.upcomingPlanDetail} options={{ title: '近日の予定' }}>
         {() => (
-          <PlaceholderScreen title="近日の予定詳細" description="予定詳細確認用の仮画面です。" />
+          <PlaceholderScreen
+            title="近日の予定詳細"
+            description="予定詳細確認用の仮画面です。"
+          />
         )}
       </Stack.Screen>
       <Stack.Screen name={homeRoutes.additionalInfoCategory} options={{ title: '情報追加' }}>
         {() => (
           <PlaceholderScreen
             title="情報追加カテゴリ"
-            description="不足情報の案内カードから遷移する仮画面です。"
+            description="不足しているプロフィール情報を追加する仮画面です。"
           />
         )}
       </Stack.Screen>
