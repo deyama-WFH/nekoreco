@@ -1,19 +1,11 @@
 import { useMemo, useState } from 'react';
 import { CommonActions, useNavigation } from '@react-navigation/native';
-import {
-  Modal,
-  Pressable,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Modal, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { AppButton } from '@/components/AppButton';
 import { Card } from '@/components/Card';
 import { colors, radius, spacing, typography } from '@/constants/theme';
-import { catRoutes, homeRoutes, mainTabs } from '@/navigation/routes';
+import { catRoutes, homeRoutes, mainTabs, recordRoutes } from '@/navigation/routes';
 import { updateTaskStatus, useAppStore } from '@/store/useAppStore';
 import { Cat, CatSchedule, HomeTask, RecordType, ReminderType } from '@/types/models';
 import { daysUntil, formatJapaneseDate, toDateString } from '@/utils/date';
@@ -144,10 +136,7 @@ export function HomeScreen() {
     [tasks, today],
   );
 
-  const upcomingPlans = useMemo(
-    () => buildUpcomingPlans(schedules, today),
-    [schedules, today],
-  );
+  const upcomingPlans = useMemo(() => buildUpcomingPlans(schedules, today), [schedules, today]);
 
   const infoSuggestions = useMemo(
     () =>
@@ -173,7 +162,20 @@ export function HomeScreen() {
 
   function openRecordInput(recordType?: RecordType, catId?: string) {
     setIsQuickRecordOpen(false);
-    navigation.dispatch(CommonActions.navigate(homeRoutes.recordInput, { recordType, catId }));
+
+    if (!catId) {
+      navigation.dispatch(
+        CommonActions.navigate(mainTabs.records, {
+          screen: recordRoutes.catSelect,
+          params: { recordType, source: 'home' },
+        }),
+      );
+      return;
+    }
+
+    navigation.dispatch(
+      CommonActions.navigate(homeRoutes.recordInput, { recordType, catId, source: 'home' }),
+    );
   }
 
   if (homeStatus === 'loading') {
@@ -295,7 +297,10 @@ function HomeHeader() {
         <Text accessibilityLabel="通知" style={styles.headerIcon}>
           通知
         </Text>
-        <Text accessibilityLabel="家族共有は近日公開" style={[styles.headerIcon, styles.disabledIcon]}>
+        <Text
+          accessibilityLabel="家族共有は近日公開"
+          style={[styles.headerIcon, styles.disabledIcon]}
+        >
           共有
         </Text>
       </View>
@@ -307,9 +312,7 @@ function EmptyCatsState({ onRegister }: { onRegister: () => void }) {
   return (
     <Card>
       <Text style={styles.sectionTitle}>最初の猫ちゃんを登録しましょう</Text>
-      <Text style={styles.bodyText}>
-        ねこれこは、猫ごとの情報をひとりずつ大切に記録できます。
-      </Text>
+      <Text style={styles.bodyText}>ねこれこは、猫ごとの情報をひとりずつ大切に記録できます。</Text>
       <View style={styles.sectionAction}>
         <AppButton label="猫ちゃんを登録する" onPress={onRegister} />
       </View>

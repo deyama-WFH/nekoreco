@@ -10,7 +10,13 @@ import {
   CatMedicalProfile,
   CatRecord,
   CatSchedule,
+  ConditionStatus,
+  FoodStatus,
+  HealthCategory,
   HomeTask,
+  InsuranceClaimStatus,
+  MedicationTiming,
+  MemoCategory,
   ReminderSetting,
   ReminderTiming,
   ReminderType,
@@ -41,6 +47,68 @@ type PersistedAppStoreState = Omit<
 >;
 type NewCatInput = Omit<Cat, 'id' | 'createdAt' | 'updatedAt'>;
 type CatProfileUpdateInput = Partial<NewCatInput>;
+type CatRecordInput =
+  | {
+      catId: string;
+      type: 'weight';
+      recordDate: string;
+      memo: string | null;
+      weightKg: number;
+    }
+  | {
+      catId: string;
+      type: 'hospital_visit';
+      recordDate: string;
+      memo: string | null;
+      hospitalName: string;
+      summary: string;
+      nextVisitDate: string | null;
+    }
+  | {
+      catId: string;
+      type: 'food';
+      recordDate: string;
+      memo: string | null;
+      foodName: string;
+      status: FoodStatus;
+      brand: string | null;
+      flavor: string | null;
+    }
+  | {
+      catId: string;
+      type: 'insurance';
+      recordDate: string;
+      memo: string | null;
+      hospitalName: string;
+      amountYen: number;
+      diagnosisName: string | null;
+      claimStatus: InsuranceClaimStatus;
+    }
+  | {
+      catId: string;
+      type: 'memo';
+      recordDate: string;
+      memo: string | null;
+      title: string;
+      category: MemoCategory;
+      body: string;
+    }
+  | {
+      catId: string;
+      type: 'medication';
+      recordDate: string;
+      memo: string | null;
+      medicineName: string;
+      timing: MedicationTiming;
+    }
+  | {
+      catId: string;
+      type: 'health_condition';
+      recordDate: string;
+      memo: string | null;
+      category: HealthCategory;
+      status: ConditionStatus;
+    };
 type AdditionalInfoCategoryId =
   | 'medical_prevention'
   | 'hospital_insurance'
@@ -105,6 +173,14 @@ async function persistState() {
 
 function createId(prefix: string) {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function completeInsuranceTasks(tasks: HomeTask[], catId: string, now: string) {
+  return tasks.map((task) =>
+    task.catId === catId && task.type === 'insurance_claim' && task.status === 'pending'
+      ? { ...task, status: 'completed' as const, updatedAt: now }
+      : task,
+  );
 }
 
 function nullableString(value: AdditionalInfoValue | undefined) {
@@ -247,6 +323,67 @@ export async function updateCatProfile(catId: string, input: CatProfileUpdateInp
 export async function completeOnboarding() {
   setState({ hasCompletedOnboarding: true });
   await persistState();
+}
+
+export async function saveCatRecord(input: CatRecordInput) {
+  const now = new Date().toISOString();
+  const record: CatRecord = {
+    ...input,
+    id: createId(`record-${input.type}`),
+    createdAt: now,
+    updatedAt: now,
+  } as CatRecord;
+  let nextSchedules = state.schedules;
+  let nextTasks = state.tasks;
+
+  if (input.type === 'hospital_visit' && input.nextVisitDate) {
+    nextSchedules = upsertSchedule(
+      state.schedules,
+      input.catId,
+      'hospital_visit',
+      input.nextVisitDate,
+      '通院予定',
+      now,
+    );
+  }
+
+  if (input.type === 'insurance') {
+    if (input.claimStatus === 'unclaimed' || input.claimStatus === 'preparing') {
+      const hasPendingTask = state.tasks.some(
+        (task) =>
+          task.catId === input.catId &&
+          task.type === 'insurance_claim' &&
+          task.status === 'pending',
+      );
+
+      if (!hasPendingTask) {
+        nextTasks = [
+          ...state.tasks,
+          {
+            id: createId('task-insurance'),
+            catId: input.catId,
+            type: 'insurance_claim',
+            title: '保険請求が未対応です',
+            dueDate: input.recordDate,
+            status: 'pending',
+            createdAt: now,
+            updatedAt: now,
+          },
+        ];
+      }
+    } else {
+      nextTasks = completeInsuranceTasks(state.tasks, input.catId, now);
+    }
+  }
+
+  setState({
+    records: [...state.records, record],
+    schedules: nextSchedules,
+    tasks: nextTasks,
+  });
+  await persistState();
+
+  return record;
 }
 
 export async function saveAdditionalInfo(
@@ -462,6 +599,7 @@ export const useAppStore = Object.assign(
     completeOnboarding,
     hydrateAppStore,
     saveAdditionalInfo,
+    saveCatRecord,
     updateTaskStatus,
   },
 );

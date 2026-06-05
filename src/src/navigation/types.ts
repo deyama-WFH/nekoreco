@@ -9,6 +9,14 @@ import {
   rootRoutes,
   settingsRoutes,
 } from '@/navigation/routes';
+import { RecordType } from '@/types/models';
+
+export type RecordSource = 'home' | 'cat' | 'record';
+export type RecordFlowParams = {
+  catId?: string;
+  recordType?: RecordType;
+  source?: RecordSource;
+};
 
 export type OnboardingStackParamList = {
   [onboardingRoutes.splash]: undefined;
@@ -32,7 +40,7 @@ export type HomeStackParamList = {
   [homeRoutes.todayTaskDetail]: { taskId?: string } | undefined;
   [homeRoutes.upcomingPlanDetail]: { scheduleId?: string } | undefined;
   [homeRoutes.additionalInfoCategory]: undefined;
-  [homeRoutes.recordInput]: { catId?: string; recordType?: string } | undefined;
+  [homeRoutes.recordInput]: RecordFlowParams | undefined;
 };
 
 export type CatStackParamList = {
@@ -41,13 +49,13 @@ export type CatStackParamList = {
   [catRoutes.create]: undefined;
   [catRoutes.profileEdit]: { catId?: string } | undefined;
   [catRoutes.sharePreview]: { catId?: string } | undefined;
-  [catRoutes.recordInput]: { catId?: string; recordType?: string } | undefined;
+  [catRoutes.recordInput]: RecordFlowParams | undefined;
 };
 
 export type RecordStackParamList = {
   [recordRoutes.typeSelect]: undefined;
-  [recordRoutes.catSelect]: undefined;
-  [recordRoutes.input]: { catId?: string; recordType?: string } | undefined;
+  [recordRoutes.catSelect]: RecordFlowParams | undefined;
+  [recordRoutes.input]: RecordFlowParams | undefined;
 };
 
 export type SettingsStackParamList = {

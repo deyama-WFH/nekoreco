@@ -372,7 +372,11 @@ export function CatDetailScreen({ navigation, route }: CatStackProps<typeof catR
 
   function openRecordInput(recordType: RecordType) {
     setIsQuickAddOpen(false);
-    navigation.navigate(catRoutes.recordInput, { catId: selectedCatId, recordType });
+    navigation.navigate(catRoutes.recordInput, {
+      catId: selectedCatId,
+      recordType,
+      source: 'cat',
+    });
   }
 
   return (
@@ -940,29 +944,6 @@ export function SharePreviewScreen({ route }: CatStackProps<typeof catRoutes.sha
               ? `${cat.name}の情報を家族と共有する導線です。`
               : '猫情報を家族と共有する導線です。'}
             MVPでは招待や同期は行わず、今後の共有機能への入口として表示しています。
-          </Text>
-        </Card>
-      </ScrollView>
-    </ScreenShell>
-  );
-}
-
-export function CatRecordInputPlaceholderScreen({
-  route,
-}: CatStackProps<typeof catRoutes.recordInput>) {
-  const { catId, recordType } = route.params ?? {};
-  const cat = useAppStore((state) => state.cats.find((item) => item.id === catId));
-
-  return (
-    <ScreenShell>
-      <ScrollView contentContainerStyle={styles.container}>
-        <Card>
-          <Text style={styles.cardTitle}>この子の記録入力</Text>
-          <Text style={styles.bodyText}>
-            {cat
-              ? `${cat.name}の${recordType ? recordTypeLabels[recordType as RecordType] : ''}記録を追加する仮画面です。`
-              : '対象猫を固定した記録入力の仮画面です。'}
-            猫詳細からの導線では猫選択をスキップします。
           </Text>
         </Card>
       </ScrollView>
