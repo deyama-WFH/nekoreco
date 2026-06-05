@@ -41,7 +41,7 @@ export type CatStackParamList = {
   [catRoutes.create]: undefined;
   [catRoutes.profileEdit]: { catId?: string } | undefined;
   [catRoutes.sharePreview]: { catId?: string } | undefined;
-  [catRoutes.recordInput]: { catId?: string } | undefined;
+  [catRoutes.recordInput]: { catId?: string; recordType?: string } | undefined;
 };
 
 export type RecordStackParamList = {

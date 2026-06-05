@@ -35,8 +35,12 @@ type AppStoreState = {
 };
 
 type Listener = (state: AppStoreState) => void;
-type PersistedAppStoreState = Omit<AppStoreState, 'hasHydrated' | 'homeStatus' | 'homeErrorMessage'>;
+type PersistedAppStoreState = Omit<
+  AppStoreState,
+  'hasHydrated' | 'homeStatus' | 'homeErrorMessage'
+>;
 type NewCatInput = Omit<Cat, 'id' | 'createdAt' | 'updatedAt'>;
+type CatProfileUpdateInput = Partial<NewCatInput>;
 type AdditionalInfoCategoryId =
   | 'medical_prevention'
   | 'hospital_insurance'
@@ -217,6 +221,27 @@ export async function addFirstCat(input: NewCatInput) {
   await persistState();
 
   return cat;
+}
+
+export async function addCat(input: NewCatInput) {
+  return addFirstCat(input);
+}
+
+export async function updateCatProfile(catId: string, input: CatProfileUpdateInput) {
+  const now = new Date().toISOString();
+
+  setState({
+    cats: state.cats.map((cat) =>
+      cat.id === catId
+        ? {
+            ...cat,
+            ...input,
+            updatedAt: now,
+          }
+        : cat,
+    ),
+  });
+  await persistState();
 }
 
 export async function completeOnboarding() {
@@ -432,6 +457,7 @@ export const useAppStore = Object.assign(
     getState,
     setState,
     subscribe,
+    addCat,
     addFirstCat,
     completeOnboarding,
     hydrateAppStore,
