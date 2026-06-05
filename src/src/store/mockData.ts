@@ -9,8 +9,13 @@ import {
   HomeTask,
   ReminderSetting,
 } from '@/types/models';
+import { addDays, toDateString } from '@/utils/date';
 
-const now = '2026-05-30T00:00:00.000Z';
+const nowDate = new Date();
+const now = nowDate.toISOString();
+const today = toDateString(nowDate);
+const inThreeDays = toDateString(addDays(nowDate, 3));
+const inSevenDays = toDateString(addDays(nowDate, 7));
 
 export const mockCats: Cat[] = [
   {
@@ -117,7 +122,7 @@ export const mockTasks: HomeTask[] = [
     catId: 'cat-maru',
     type: 'hospital_visit',
     title: '通院予定日です',
-    dueDate: '2026-05-30',
+    dueDate: today,
     status: 'pending',
     createdAt: now,
     updatedAt: now,
@@ -127,7 +132,7 @@ export const mockTasks: HomeTask[] = [
     catId: 'cat-rio',
     type: 'insurance_claim',
     title: '保険請求が未対応です',
-    dueDate: '2026-05-30',
+    dueDate: today,
     status: 'pending',
     createdAt: now,
     updatedAt: now,
@@ -137,7 +142,7 @@ export const mockTasks: HomeTask[] = [
     catId: 'cat-sora',
     type: 'adoption_anniversary',
     title: 'うちの子記念日が近づいています',
-    dueDate: '2026-06-02',
+    dueDate: today,
     status: 'pending',
     createdAt: now,
     updatedAt: now,
@@ -149,7 +154,7 @@ export const mockSchedules: CatSchedule[] = [
     id: 'schedule-rio-vaccine',
     catId: 'cat-rio',
     type: 'vaccine',
-    dueDate: '2026-06-02',
+    dueDate: inThreeDays,
     title: 'ワクチン予定',
     status: 'scheduled',
     createdAt: now,
@@ -159,7 +164,7 @@ export const mockSchedules: CatSchedule[] = [
     id: 'schedule-maru-deworming',
     catId: 'cat-maru',
     type: 'deworming',
-    dueDate: '2026-06-05',
+    dueDate: inSevenDays,
     title: '駆虫予定',
     status: 'scheduled',
     createdAt: now,
@@ -192,7 +197,7 @@ export const mockRecords: CatRecord[] = [
     id: 'record-rio-food',
     catId: 'cat-rio',
     type: 'food',
-    recordDate: '2026-05-30',
+    recordDate: today,
     foodName: 'チキンドライ',
     status: 'ate',
     brand: 'NekoReco',

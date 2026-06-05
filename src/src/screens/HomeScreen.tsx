@@ -35,11 +35,18 @@ const taskTypeLabels: Record<ReminderType, string> = {
 const recordTypes: Array<{ label: string; type: RecordType }> = [
   { label: '体重', type: 'weight' },
   { label: '通院', type: 'hospital_visit' },
+  { label: '投薬', type: 'medication' },
   { label: 'フード', type: 'food' },
   { label: '体調', type: 'health_condition' },
   { label: '保険', type: 'insurance' },
   { label: 'メモ', type: 'memo' },
 ];
+
+const catSexLabels: Record<Cat['sex'], string> = {
+  male: 'オス',
+  female: 'メス',
+  unknown: '性別不明',
+};
 
 type InfoSuggestion = {
   cat: Cat;
@@ -103,6 +110,14 @@ function calculateAge(cat: Cat) {
   }
 
   return cat.birthDateType === 'estimated' ? `推定${age}歳` : `${age}歳`;
+}
+
+function getTaskDateLabel(dueDate: string, today: string) {
+  if (dueDate === today) {
+    return '今日';
+  }
+
+  return dueDate < today ? `期限: ${dueDate}` : `予定日: ${dueDate}`;
 }
 
 export function HomeScreen() {
@@ -213,6 +228,7 @@ export function HomeScreen() {
                 onSnooze={(taskId) => updateTaskStatus(taskId, 'snoozed')}
                 onComplete={(taskId) => updateTaskStatus(taskId, 'completed')}
                 tasks={todayTasks}
+                today={today}
               />
 
               <UpcomingPlansSection
@@ -307,12 +323,14 @@ function TodayTasksSection({
   onAddRecord,
   onComplete,
   onSnooze,
+  today,
 }: {
   cats: Cat[];
   tasks: HomeTask[];
   onAddRecord: () => void;
   onComplete: (taskId: string) => void;
   onSnooze: (taskId: string) => void;
+  today: string;
 }) {
   return (
     <View style={styles.section}>
@@ -337,9 +355,11 @@ function TodayTasksSection({
                 <Avatar name={getCatName(cats, task.catId)} />
                 <View style={styles.flex}>
                   <Text style={styles.cardTitle}>{getCatName(cats, task.catId)}</Text>
-                  <Text style={styles.metaText}>{taskTypeLabels[task.type]}</Text>
+                  <Text style={styles.metaText}>
+                    {taskTypeLabels[task.type]} / {getTaskDateLabel(task.dueDate, today)}
+                  </Text>
                 </View>
-                <Text style={styles.badge}>今日</Text>
+                <Text style={styles.badge}>{getTaskDateLabel(task.dueDate, today)}</Text>
               </View>
               <Text style={styles.bodyText}>{task.title}</Text>
               <View style={styles.rowActions}>
@@ -364,7 +384,18 @@ function UpcomingPlansSection({
   onPressPlan: (scheduleId: string) => void;
 }) {
   if (plans.length === 0) {
-    return null;
+    return (
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>近日の予定</Text>
+          <Text style={styles.sectionCount}>7日以内</Text>
+        </View>
+        <Card>
+          <Text style={styles.cardTitle}>近日の予定はありません</Text>
+          <Text style={styles.bodyText}>7日以内に対応が必要な予定はありません。</Text>
+        </Card>
+      </View>
+    );
   }
 
   return (
@@ -436,7 +467,10 @@ function CatMiniListSection({
               >
                 <Avatar name={cat.name} size="large" />
                 <Text style={styles.cardTitle}>{cat.name}</Text>
-                <Text style={styles.metaText}>{calculateAge(cat)}</Text>
+                <Text style={styles.metaText}>
+                  {calculateAge(cat)} / {catSexLabels[cat.sex]}
+                </Text>
+                <Text style={styles.metaText}>{cat.coatColorPattern ?? '毛色・柄未登録'}</Text>
                 <Text style={styles.metaText}>
                   {nextPlan ? `次: ${nextPlan.title} (${nextPlan.daysUntil}日後)` : '近日予定なし'}
                 </Text>
