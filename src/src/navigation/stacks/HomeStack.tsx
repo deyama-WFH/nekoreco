@@ -4,6 +4,7 @@ import { homeRoutes } from '@/navigation/routes';
 import { HomeStackParamList } from '@/navigation/types';
 import { HomeScreen } from '@/screens/HomeScreen';
 import { PlaceholderScreen } from '@/screens/PlaceholderScreen';
+import { RecordInputScreen } from '@/screens/RecordScreens';
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();
 
@@ -21,10 +22,7 @@ export function HomeStack() {
       </Stack.Screen>
       <Stack.Screen name={homeRoutes.upcomingPlanDetail} options={{ title: '近日の予定' }}>
         {() => (
-          <PlaceholderScreen
-            title="近日の予定詳細"
-            description="予定詳細確認用の仮画面です。"
-          />
+          <PlaceholderScreen title="近日の予定詳細" description="予定詳細確認用の仮画面です。" />
         )}
       </Stack.Screen>
       <Stack.Screen name={homeRoutes.additionalInfoCategory} options={{ title: '情報追加' }}>
@@ -35,14 +33,11 @@ export function HomeStack() {
           />
         )}
       </Stack.Screen>
-      <Stack.Screen name={homeRoutes.recordInput} options={{ title: '記録入力' }}>
-        {() => (
-          <PlaceholderScreen
-            title="記録入力"
-            description="ホームからのクイック記録入力用の仮画面です。"
-          />
-        )}
-      </Stack.Screen>
+      <Stack.Screen
+        name={homeRoutes.recordInput}
+        component={RecordInputScreen}
+        options={{ title: '記録入力' }}
+      />
     </Stack.Navigator>
   );
 }

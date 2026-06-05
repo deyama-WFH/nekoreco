@@ -7,9 +7,9 @@ import {
   CatDetailScreen,
   CatListScreen,
   CatProfileEditScreen,
-  CatRecordInputPlaceholderScreen,
   SharePreviewScreen,
 } from '@/screens/CatListScreen';
+import { RecordInputScreen } from '@/screens/RecordScreens';
 
 const Stack = createNativeStackNavigator<CatStackParamList>();
 
@@ -43,7 +43,7 @@ export function CatStack() {
       />
       <Stack.Screen
         name={catRoutes.recordInput}
-        component={CatRecordInputPlaceholderScreen}
+        component={RecordInputScreen}
         options={{ title: 'この子の記録' }}
       />
     </Stack.Navigator>
