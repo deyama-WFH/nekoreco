@@ -28,7 +28,7 @@ export function RecordStack() {
         {() => (
           <PlaceholderScreen
             title="記録入力"
-            description="記録タイプに応じた入力 UI を後続で実装します。"
+            description="記録タイプに応じた入力UIを後続で実装します。"
           />
         )}
       </Stack.Screen>

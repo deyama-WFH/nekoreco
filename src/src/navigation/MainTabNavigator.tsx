@@ -1,12 +1,12 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
+import { colors } from '@/constants/theme';
+import { mainTabs } from '@/navigation/routes';
 import { CatStack } from '@/navigation/stacks/CatStack';
 import { HomeStack } from '@/navigation/stacks/HomeStack';
 import { RecordStack } from '@/navigation/stacks/RecordStack';
 import { SettingsStack } from '@/navigation/stacks/SettingsStack';
-import { mainTabs } from '@/navigation/routes';
 import { MainTabParamList } from '@/navigation/types';
-import { colors } from '@/constants/theme';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 

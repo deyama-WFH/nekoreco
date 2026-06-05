@@ -27,7 +27,10 @@ export function SettingsStack() {
       </Stack.Screen>
       <Stack.Screen name={settingsRoutes.familyShareComingSoon} options={{ title: '家族共有' }}>
         {() => (
-          <PlaceholderScreen title="家族共有 近日公開" description="MVP では本実装しません。" />
+          <PlaceholderScreen
+            title="家族共有は近日公開"
+            description="MVP では本実装せず、Coming Soon として扱います。"
+          />
         )}
       </Stack.Screen>
       <Stack.Screen name={settingsRoutes.appInfo} options={{ title: 'アプリ情報' }}>

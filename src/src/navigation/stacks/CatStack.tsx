@@ -19,7 +19,7 @@ export function CatStack() {
         {() => (
           <PlaceholderScreen
             title="猫詳細"
-            description="概要 / 医療 / ごはん / 履歴 / 保険 / メモの6タブを後続で実装します。"
+            description="概要、医療、ごはん、履歴、保険、メモの6タブを後続で実装します。"
             actions={[
               { label: 'プロフィール編集', routeName: catRoutes.profileEdit },
               { label: '共有プレビュー', routeName: catRoutes.sharePreview },
@@ -48,7 +48,7 @@ export function CatStack() {
         {() => (
           <PlaceholderScreen
             title="共有プレビュー"
-            description="家族共有の本実装ではなく導線のみです。"
+            description="MVP では本実装せず、導線のみ配置します。"
           />
         )}
       </Stack.Screen>
