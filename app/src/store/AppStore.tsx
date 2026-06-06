@@ -15,8 +15,10 @@ import type {
   CatRecord,
   HomeTask,
   Profiles,
+  Reminder,
   ReminderCategorySetting,
   ReminderGlobalSettings,
+  UpcomingPlan,
 } from '../types/models';
 import {
   defaultReminderCategorySettings,
@@ -59,6 +61,8 @@ type Store = PersistedState & {
   setReminderCategory: (type: ReminderCategorySetting['reminderType'], enabled: boolean) => void;
   resetAllData: () => Promise<void>;
   createRecordId: () => string;
+  upcomingPlans: UpcomingPlan[];
+  reminders: Reminder[];
 };
 
 const AppStoreContext = createContext<Store | null>(null);
@@ -92,7 +96,7 @@ export function AppStoreProvider({ children }: PropsWithChildren) {
   const value = useMemo<Store>(() => {
     const upcomingPlans = buildUpcomingPlans(state.cats, state.profiles, state.records);
     const tasks = buildHomeTasks(state.cats, state.profiles, state.records, state.tasks);
-    buildReminders(
+    const reminders = buildReminders(
       state.cats,
       state.profiles,
       state.records,
@@ -171,7 +175,8 @@ export function AppStoreProvider({ children }: PropsWithChildren) {
       },
       createRecordId: () => createId('record'),
       upcomingPlans,
-    } as Store & { upcomingPlans: typeof upcomingPlans };
+      reminders,
+    };
   }, [addCat, isHydrated, state]);
 
   return <AppStoreContext.Provider value={value}>{children}</AppStoreContext.Provider>;
