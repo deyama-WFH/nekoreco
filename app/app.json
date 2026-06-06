@@ -23,6 +23,16 @@
       },
       "package": "com.deyama.nekoreco"
     },
-    "plugins": ["expo-notifications"]
+    "plugins": [
+      "expo-notifications",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "猫ちゃんのプロフィール写真を設定するため、写真へのアクセスを使用します。",
+          "cameraPermission": false,
+          "microphonePermission": false
+        }
+      ]
+    ]
   }
 }

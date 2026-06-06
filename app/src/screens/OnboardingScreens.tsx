@@ -1,12 +1,14 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useMemo, useState } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Alert, Image, StyleSheet, Text, View } from 'react-native';
 
 import { Button, Card, ChoiceRow, Field, Screen, Title } from '../components/ui';
 import type {
   AdditionalInfoCategory,
   OnboardingStackParamList,
 } from '../navigation/types';
+import { persistCatPhoto } from '../services/catPhotos';
 import { useAppStore } from '../store/AppStore';
 import { colors, theme } from '../theme';
 import type {
@@ -57,6 +59,7 @@ export function OnboardingWelcomeScreen({ navigation }: Props<'OnboardingWelcome
 }
 
 type CatFormValue = {
+  photoUrl: string;
   name: string;
   sex: CatSex;
   birthDate: string;
@@ -78,6 +81,7 @@ export function CatProfileForm({
   onSubmit: (value: CatFormValue) => void;
 }) {
   const [value, setValue] = useState<CatFormValue>({
+    photoUrl: '',
     name: '',
     sex: 'unknown',
     birthDate: '',
@@ -92,6 +96,26 @@ export function CatProfileForm({
   const [error, setError] = useState('');
   const patch = <K extends keyof CatFormValue>(key: K, next: CatFormValue[K]) =>
     setValue((current) => ({ ...current, [key]: next }));
+  const pickPhoto = async () => {
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permission.granted) {
+      Alert.alert(
+        '写真へのアクセスが必要です',
+        '猫ちゃんのプロフィール写真を選ぶため、設定から写真へのアクセスを許可してください。',
+      );
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+    const asset = result.assets?.[0];
+    if (!result.canceled && asset) {
+      patch('photoUrl', persistCatPhoto(asset.uri, asset.fileName));
+    }
+  };
   const submit = () => {
     const name = value.name.trim();
     if (!name) return setError('名前を入力してください');
@@ -109,8 +133,20 @@ export function CatProfileForm({
   return (
     <>
       <Card style={styles.photoCard}>
-        <Image source={require('../../assets/logo.png')} style={styles.photoPlaceholder} />
-        <Text style={styles.helper}>写真はあとから設定できます</Text>
+        <Image
+          source={value.photoUrl ? { uri: value.photoUrl } : require('../../assets/logo.png')}
+          style={styles.photoPlaceholder}
+        />
+        <Button
+          title={value.photoUrl ? '写真を変更する' : '写真を選ぶ'}
+          variant="secondary"
+          onPress={() => void pickPhoto()}
+        />
+        {value.photoUrl ? (
+          <Button title="写真を外す" variant="ghost" onPress={() => patch('photoUrl', '')} />
+        ) : (
+          <Text style={styles.helper}>写真はあとから設定できます</Text>
+        )}
       </Card>
       <Field
         label="名前（必須）"
@@ -220,7 +256,7 @@ export function FirstCatRegistrationScreen({ navigation }: Props<'FirstCatRegist
                   : value.breed || null,
             breedType: value.breedType,
             coatColorPattern: value.coatColorPattern || null,
-            photoUrl: null,
+            photoUrl: value.photoUrl || null,
           });
           navigation.navigate('CatRegistrationComplete', { catId });
         }}

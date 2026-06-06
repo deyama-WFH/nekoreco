@@ -67,7 +67,11 @@ export function HomeScreen({ navigation }: Props<'Home'>) {
                     <Card>
                       <View style={styles.row}>
                         <Image
-                          source={require('../../assets/logo.png')}
+                          source={
+                            cat?.photoUrl
+                              ? { uri: cat.photoUrl }
+                              : require('../../assets/logo.png')
+                          }
                           style={styles.avatar}
                         />
                         <View style={styles.flex}>
@@ -125,7 +129,12 @@ export function HomeScreen({ navigation }: Props<'Home'>) {
                       }
                       style={styles.miniCard}
                     >
-                      <Image source={require('../../assets/logo.png')} style={styles.miniPhoto} />
+                      <Image
+                        source={
+                          cat.photoUrl ? { uri: cat.photoUrl } : require('../../assets/logo.png')
+                        }
+                        style={styles.miniPhoto}
+                      />
                       <Text style={styles.cardTitle}>{cat.name}</Text>
                       <Text style={styles.muted}>{ageLabel(cat.birthDate, cat.birthDateType)}</Text>
                       <Text style={styles.next}>

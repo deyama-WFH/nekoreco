@@ -10,6 +10,7 @@ import {
 } from 'react';
 
 import { buildHomeTasks, buildReminders, buildUpcomingPlans } from '../services/reminders';
+import { syncLocalNotifications } from '../services/localNotifications';
 import type {
   Cat,
   CatRecord,
@@ -83,6 +84,28 @@ export function AppStoreProvider({ children }: PropsWithChildren) {
     if (isHydrated) void AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   }, [isHydrated, state]);
 
+  const reminders = useMemo(
+    () =>
+      buildReminders(
+        state.cats,
+        state.profiles,
+        state.records,
+        state.reminderGlobal,
+        state.reminderCategories,
+      ),
+    [
+      state.cats,
+      state.profiles,
+      state.records,
+      state.reminderCategories,
+      state.reminderGlobal,
+    ],
+  );
+
+  useEffect(() => {
+    if (isHydrated) void syncLocalNotifications(reminders).catch(() => undefined);
+  }, [isHydrated, reminders]);
+
   const addCat = useCallback((input: Omit<Cat, 'id' | 'createdAt' | 'updatedAt'>) => {
     const id = createId('cat');
     const timestamp = new Date().toISOString();
@@ -96,13 +119,6 @@ export function AppStoreProvider({ children }: PropsWithChildren) {
   const value = useMemo<Store>(() => {
     const upcomingPlans = buildUpcomingPlans(state.cats, state.profiles, state.records);
     const tasks = buildHomeTasks(state.cats, state.profiles, state.records, state.tasks);
-    const reminders = buildReminders(
-      state.cats,
-      state.profiles,
-      state.records,
-      state.reminderGlobal,
-      state.reminderCategories,
-    );
     return {
       ...state,
       tasks,
@@ -177,7 +193,7 @@ export function AppStoreProvider({ children }: PropsWithChildren) {
       upcomingPlans,
       reminders,
     };
-  }, [addCat, isHydrated, state]);
+  }, [addCat, isHydrated, reminders, state]);
 
   return <AppStoreContext.Provider value={value}>{children}</AppStoreContext.Provider>;
 }

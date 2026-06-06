@@ -5,6 +5,7 @@ import { Alert, Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 
 import { Button, Card, Screen, Title } from '../components/ui';
 import type { SettingsStackParamList } from '../navigation/types';
+import { syncLocalNotifications } from '../services/localNotifications';
 import { useAppStore } from '../store/AppStore';
 import { colors, theme } from '../theme';
 import type { ReminderType } from '../types/models';
@@ -112,11 +113,13 @@ export function ReminderSettingsScreen({ navigation }: Props<'ReminderSettings'>
 }
 
 export function NotificationPermissionScreen({ navigation }: Props<'NotificationPermission'>) {
+  const { reminders } = useAppStore();
   const [requesting, setRequesting] = useState(false);
   const request = async () => {
     setRequesting(true);
     try {
       const permission = await Notifications.requestPermissionsAsync();
+      if (permission.granted) await syncLocalNotifications(reminders);
       Alert.alert(
         permission.granted ? '通知を許可しました' : '通知は許可されていません',
         permission.granted

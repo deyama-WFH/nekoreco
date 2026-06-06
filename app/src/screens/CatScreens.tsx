@@ -50,7 +50,10 @@ export function CatListScreen({ navigation }: Props<'CatList'>) {
                 style={styles.catCard}
                 onPress={() => navigation.navigate('CatDetail', { catId: cat.id })}
               >
-                <Image source={require('../../assets/logo.png')} style={styles.catPhoto} />
+                <Image
+                  source={cat.photoUrl ? { uri: cat.photoUrl } : require('../../assets/logo.png')}
+                  style={styles.catPhoto}
+                />
                 <Text style={styles.catName}>{cat.name}</Text>
                 <Text style={styles.meta}>
                   {ageLabel(cat.birthDate, cat.birthDateType)} / {sexLabels[cat.sex]}
@@ -92,7 +95,7 @@ export function CatCreateScreen({ navigation }: Props<'CatCreate'>) {
             breed: value.breedType === 'mixed' ? '雑種' : value.breed || null,
             breedType: value.breedType,
             coatColorPattern: value.coatColorPattern || null,
-            photoUrl: null,
+            photoUrl: value.photoUrl || null,
           });
           navigation.replace('CatDetail', { catId });
         }}
@@ -110,6 +113,7 @@ export function CatProfileEditScreen({ navigation, route }: Props<'CatProfileEdi
       <Title>{cat.name}のプロフィール編集</Title>
       <CatProfileForm
         initial={{
+          photoUrl: cat.photoUrl ?? '',
           name: cat.name,
           sex: cat.sex,
           birthDate: cat.birthDate ?? '',
@@ -168,7 +172,10 @@ export function CatDetailScreen({ navigation, route }: Props<'CatDetail'>) {
     <Screen>
       <Card>
         <View style={styles.profile}>
-          <Image source={require('../../assets/logo.png')} style={styles.detailPhoto} />
+          <Image
+            source={cat.photoUrl ? { uri: cat.photoUrl } : require('../../assets/logo.png')}
+            style={styles.detailPhoto}
+          />
           <View style={styles.flex}>
             <Text style={styles.detailName}>{cat.name}</Text>
             <Text style={styles.meta}>
