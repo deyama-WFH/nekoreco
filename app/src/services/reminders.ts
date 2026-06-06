@@ -100,6 +100,29 @@ export const collectScheduleSources = (
         sourceId: record.id,
       });
     }
+    if (
+      record.recordType === 'insurance' &&
+      ['unclaimed', 'preparing'].includes(record.claimStatus)
+    ) {
+      sources.push({
+        catId: record.catId,
+        type: 'insurance_claim',
+        title: '保険請求を確認',
+        date: addDays(record.recordedAt.slice(0, 10), 3),
+        sourceType: 'insurance_claim',
+        sourceId: record.id,
+      });
+    }
+    if (record.recordType === 'medication' && !record.isGiven) {
+      sources.push({
+        catId: record.catId,
+        type: 'medication',
+        title: `${record.medicationName}を投薬`,
+        date: record.recordedAt.slice(0, 10),
+        sourceType: 'medication',
+        sourceId: record.id,
+      });
+    }
   });
   return sources;
 };
@@ -137,7 +160,7 @@ export const buildHomeTasks = (
 ): HomeTask[] => {
   const now = new Date().toISOString();
   const scheduled = collectScheduleSources(cats, profiles, records, baseDate)
-    .filter((source) => source.date === baseDate)
+    .filter((source) => source.date === baseDate && source.type !== 'insurance_claim')
     .map(
       (source): HomeTask => ({
         id: `task-${source.type}-${source.sourceId ?? source.date}`,
@@ -180,8 +203,9 @@ export const buildHomeTasks = (
         createdAt: record.createdAt,
         updatedAt: now,
       }),
-    );
-  return [...scheduled, ...insurance].filter((task) => task.status !== 'completed');
+    )
+    .filter((task) => task.dueDate <= baseDate);
+  return [...scheduled, ...insurance].filter((task) => task.status === 'pending');
 };
 
 export const buildReminders = (

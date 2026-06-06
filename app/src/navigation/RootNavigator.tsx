@@ -24,7 +24,18 @@ import {
   OnboardingSplashScreen,
   OnboardingWelcomeScreen,
 } from '../screens/OnboardingScreens';
-import { PlaceholderScreen } from '../screens/PlaceholderScreen';
+import {
+  RecordCatSelectScreen,
+  RecordInputScreen,
+  RecordTypeSelectScreen,
+} from '../screens/RecordScreens';
+import {
+  AppInfoScreen,
+  FamilyShareComingSoonScreen,
+  NotificationPermissionScreen,
+  ReminderSettingsScreen,
+  SettingsScreen,
+} from '../screens/SettingsScreens';
 import { useAppStore } from '../store/AppStore';
 import { colors } from '../theme';
 import type {
@@ -43,8 +54,6 @@ const Cat = createNativeStackNavigator<CatStackParamList>();
 const Record = createNativeStackNavigator<RecordStackParamList>();
 const Settings = createNativeStackNavigator<SettingsStackParamList>();
 const Tabs = createBottomTabNavigator<MainTabParamList>();
-
-const placeholder = (title: string) => () => <PlaceholderScreen title={title} />;
 
 function OnboardingNavigator() {
   return (
@@ -65,9 +74,9 @@ function HomeNavigator() {
       <Home.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
       <Home.Screen name="TodayTaskDetail" component={TodayTaskDetailScreen} options={{ title: '今日やること' }} />
       <Home.Screen name="UpcomingPlanDetail" component={UpcomingPlanDetailScreen} options={{ title: '近日の予定' }} />
-      <Home.Screen name="HomeRecordTypeSelect" component={placeholder('記録を選ぶ')} />
-      <Home.Screen name="HomeRecordCatSelect" component={placeholder('猫を選ぶ')} />
-      <Home.Screen name="HomeRecordInput" component={placeholder('記録する')} />
+      <Home.Screen name="HomeRecordTypeSelect" component={RecordTypeSelectScreen} options={{ title: '記録を選ぶ' }} />
+      <Home.Screen name="HomeRecordCatSelect" component={RecordCatSelectScreen} options={{ title: '猫を選ぶ' }} />
+      <Home.Screen name="HomeRecordInput" component={RecordInputScreen} options={{ title: '記録する' }} />
       <Home.Screen name="HomeAdditionalInfoCategory" component={HomeAdditionalInfoCategoryScreen} options={{ title: '情報を追加' }} />
       <Home.Screen name="HomeAdditionalInfoInput" component={HomeAdditionalInfoInputScreen} options={{ title: '情報を入力' }} />
     </Home.Navigator>
@@ -81,9 +90,9 @@ function CatNavigator() {
       <Cat.Screen name="CatDetail" component={CatDetailScreen} options={{ title: '猫の詳細' }} />
       <Cat.Screen name="CatCreate" component={CatCreateScreen} options={{ title: '猫ちゃんを追加' }} />
       <Cat.Screen name="CatProfileEdit" component={CatProfileEditScreen} options={{ title: 'プロフィール編集' }} />
-      <Cat.Screen name="CatRecordTypeSelect" component={placeholder('記録を選ぶ')} />
-      <Cat.Screen name="CatRecordInput" component={placeholder('記録する')} />
-      <Cat.Screen name="FamilyShareComingSoon" component={placeholder('家族共有')} />
+      <Cat.Screen name="CatRecordTypeSelect" component={RecordTypeSelectScreen} options={{ title: '記録を選ぶ' }} />
+      <Cat.Screen name="CatRecordInput" component={RecordInputScreen} options={{ title: '記録する' }} />
+      <Cat.Screen name="FamilyShareComingSoon" component={FamilyShareComingSoonScreen} options={{ title: '家族共有' }} />
     </Cat.Navigator>
   );
 }
@@ -93,11 +102,11 @@ function RecordNavigator() {
     <Record.Navigator>
       <Record.Screen
         name="RecordTypeSelect"
-        component={placeholder('記録する')}
+        component={RecordTypeSelectScreen}
         options={{ headerShown: false }}
       />
-      <Record.Screen name="RecordCatSelect" component={placeholder('猫を選ぶ')} />
-      <Record.Screen name="RecordInput" component={placeholder('記録する')} />
+      <Record.Screen name="RecordCatSelect" component={RecordCatSelectScreen} options={{ title: '猫を選ぶ' }} />
+      <Record.Screen name="RecordInput" component={RecordInputScreen} options={{ title: '記録する' }} />
     </Record.Navigator>
   );
 }
@@ -107,16 +116,17 @@ function SettingsNavigator() {
     <Settings.Navigator>
       <Settings.Screen
         name="Settings"
-        component={placeholder('設定')}
+        component={SettingsScreen}
         options={{ headerShown: false }}
       />
-      <Settings.Screen name="ReminderSettings" component={placeholder('通知設定')} />
-      <Settings.Screen name="NotificationPermission" component={placeholder('通知の許可')} />
+      <Settings.Screen name="ReminderSettings" component={ReminderSettingsScreen} options={{ title: '通知設定' }} />
+      <Settings.Screen name="NotificationPermission" component={NotificationPermissionScreen} options={{ title: '通知の許可' }} />
       <Settings.Screen
         name="SettingsFamilyShareComingSoon"
-        component={placeholder('家族共有')}
+        component={FamilyShareComingSoonScreen}
+        options={{ title: '家族共有' }}
       />
-      <Settings.Screen name="AppInfo" component={placeholder('アプリ情報')} />
+      <Settings.Screen name="AppInfo" component={AppInfoScreen} options={{ title: 'アプリ情報' }} />
     </Settings.Navigator>
   );
 }
