@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "ねこレコ",
+    "slug": "nekoreco",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/logo.PNG",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/logo.PNG",
+      "resizeMode": "contain",
+      "backgroundColor": "#FFF9F2"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.deyama.nekoreco"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/logo.PNG",
+        "backgroundColor": "#FFF9F2"
+      },
+      "package": "com.deyama.nekoreco"
+    },
+    "plugins": ["expo-notifications"]
+  }
+}
