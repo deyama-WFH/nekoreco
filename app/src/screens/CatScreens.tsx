@@ -50,7 +50,7 @@ export function CatListScreen({ navigation }: Props<'CatList'>) {
                 style={styles.catCard}
                 onPress={() => navigation.navigate('CatDetail', { catId: cat.id })}
               >
-                <Image source={require('../../assets/logo.PNG')} style={styles.catPhoto} />
+                <Image source={require('../../assets/logo.png')} style={styles.catPhoto} />
                 <Text style={styles.catName}>{cat.name}</Text>
                 <Text style={styles.meta}>
                   {ageLabel(cat.birthDate, cat.birthDateType)} / {sexLabels[cat.sex]}
@@ -168,7 +168,7 @@ export function CatDetailScreen({ navigation, route }: Props<'CatDetail'>) {
     <Screen>
       <Card>
         <View style={styles.profile}>
-          <Image source={require('../../assets/logo.PNG')} style={styles.detailPhoto} />
+          <Image source={require('../../assets/logo.png')} style={styles.detailPhoto} />
           <View style={styles.flex}>
             <Text style={styles.detailName}>{cat.name}</Text>
             <Text style={styles.meta}>

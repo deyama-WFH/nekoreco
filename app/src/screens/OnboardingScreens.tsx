@@ -30,7 +30,7 @@ export function OnboardingSplashScreen({ navigation }: Props<'OnboardingSplash'>
   }, [navigation]);
   return (
     <View style={styles.splash}>
-      <Image source={require('../../assets/logo.PNG')} style={styles.logo} />
+      <Image source={require('../../assets/logo.png')} style={styles.logo} />
       <Text style={styles.brand}>ねこレコ</Text>
       <Text style={styles.catchcopy}>たくさんの“うちの子”を、ひとりずつ大切に記録。</Text>
     </View>
@@ -40,7 +40,7 @@ export function OnboardingSplashScreen({ navigation }: Props<'OnboardingSplash'>
 export function OnboardingWelcomeScreen({ navigation }: Props<'OnboardingWelcome'>) {
   return (
     <Screen contentStyle={styles.centered}>
-      <Image source={require('../../assets/logo.PNG')} style={styles.welcomeLogo} />
+      <Image source={require('../../assets/logo.png')} style={styles.welcomeLogo} />
       <Title subtitle="猫ごとの健康・ごはん・通院・記念日を、家族でわかりやすく管理できます。">
         ねこレコへようこそ
       </Title>
@@ -109,7 +109,7 @@ export function CatProfileForm({
   return (
     <>
       <Card style={styles.photoCard}>
-        <Image source={require('../../assets/logo.PNG')} style={styles.photoPlaceholder} />
+        <Image source={require('../../assets/logo.png')} style={styles.photoPlaceholder} />
         <Text style={styles.helper}>写真はあとから設定できます</Text>
       </Card>
       <Field
@@ -237,7 +237,7 @@ export function CatRegistrationCompleteScreen({
   const cat = cats.find((item) => item.id === route.params.catId);
   return (
     <Screen contentStyle={styles.centered}>
-      <Image source={require('../../assets/logo.PNG')} style={styles.welcomeLogo} />
+      <Image source={require('../../assets/logo.png')} style={styles.welcomeLogo} />
       <Title subtitle="続けて詳しい情報を入力すると、通知や家族共有がもっと便利になります。">
         {cat?.name ?? '猫ちゃん'}ちゃんを登録しました！
       </Title>

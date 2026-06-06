@@ -82,7 +82,7 @@ export function RecordCatSelectScreen({ navigation, route }: any) {
         >
           <Card>
             <View style={styles.catRow}>
-              <Image source={require('../../assets/logo.PNG')} style={styles.avatar} />
+              <Image source={require('../../assets/logo.png')} style={styles.avatar} />
               <View>
                 <Text style={styles.cardTitle}>{cat.name}</Text>
                 <Text style={styles.muted}>
@@ -244,7 +244,7 @@ export function RecordInputScreen({ navigation, route }: any) {
       <Title subtitle={cat?.name}>{recordTypes.find((item) => item.type === type)?.label}を記録</Title>
       <Card>
         <View style={styles.catRow}>
-          <Image source={require('../../assets/logo.PNG')} style={styles.avatar} />
+          <Image source={require('../../assets/logo.png')} style={styles.avatar} />
           <Text style={styles.cardTitle}>{cat?.name}</Text>
         </View>
       </Card>

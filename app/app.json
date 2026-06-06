@@ -4,11 +4,11 @@
     "slug": "nekoreco",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/logo.PNG",
+    "icon": "./assets/logo.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/logo.PNG",
+      "image": "./assets/logo.png",
       "resizeMode": "contain",
       "backgroundColor": "#FFF9F2"
     },
@@ -18,7 +18,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/logo.PNG",
+        "foregroundImage": "./assets/logo.png",
         "backgroundColor": "#FFF9F2"
       },
       "package": "com.deyama.nekoreco"
